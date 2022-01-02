@@ -1,0 +1,142 @@
+Chain INPUT (policy DROP 0 packets, 0 bytes)
+num   pkts bytes target     prot opt in     out     source               destination         
+1    15368   11M Ifw        all  --  any    any     anywhere             anywhere            
+2        0     0 eno1_in    all  --  eno1   any     anywhere             anywhere            
+3    15368   11M wlo1_in    all  --  wlo1   any     anywhere             anywhere            
+4        0     0 ACCEPT     all  --  lo     any     anywhere             anywhere            
+5        0     0 DROP       all  --  any    any     anywhere             anywhere             ADDRTYPE match dst-type BROADCAST
+6        0     0 DROP       all  --  any    any     anywhere             anywhere             ADDRTYPE match dst-type ANYCAST
+7        0     0 DROP       all  --  any    any     anywhere             anywhere             ADDRTYPE match dst-type MULTICAST
+8        0     0 LOG        all  --  any    any     anywhere             anywhere             limit: up to 1/sec burst 10 mode srcip LOG level info prefix "INPUT REJECT "
+9        0     0 reject     all  --  any    any     anywhere             anywhere            [goto] 
+
+Chain FORWARD (policy DROP 0 packets, 0 bytes)
+num   pkts bytes target     prot opt in     out     source               destination         
+1        0     0 eno1_fwd   all  --  eno1   any     anywhere             anywhere            
+2        0     0 wlo1_fwd   all  --  wlo1   any     anywhere             anywhere            
+3        0     0 DROP       all  --  any    any     anywhere             anywhere             ADDRTYPE match dst-type BROADCAST
+4        0     0 DROP       all  --  any    any     anywhere             anywhere             ADDRTYPE match dst-type ANYCAST
+5        0     0 DROP       all  --  any    any     anywhere             anywhere             ADDRTYPE match dst-type MULTICAST
+6        0     0 LOG        all  --  any    any     anywhere             anywhere             limit: up to 1/sec burst 10 mode srcip LOG level info prefix "FORWARD REJECT "
+7        0     0 reject     all  --  any    any     anywhere             anywhere            [goto] 
+
+Chain OUTPUT (policy DROP 0 packets, 0 bytes)
+num   pkts bytes target     prot opt in     out     source               destination         
+1        0     0 eno1_out   all  --  any    eno1    anywhere             anywhere            
+2    14629 1716K wlo1_out   all  --  any    wlo1    anywhere             anywhere            
+3        0     0 ACCEPT     all  --  any    lo      anywhere             anywhere            
+4        0     0 DROP       all  --  any    any     anywhere             anywhere             ADDRTYPE match dst-type BROADCAST
+5        0     0 DROP       all  --  any    any     anywhere             anywhere             ADDRTYPE match dst-type ANYCAST
+6        0     0 DROP       all  --  any    any     anywhere             anywhere             ADDRTYPE match dst-type MULTICAST
+7        0     0 LOG        all  --  any    any     anywhere             anywhere             limit: up to 1/sec burst 10 mode srcip LOG level info prefix "OUTPUT REJECT "
+8        0     0 reject     all  --  any    any     anywhere             anywhere            [goto] 
+
+Chain Ifw (1 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+1        0     0 RETURN     all  --  any    any     anywhere             anywhere             match-set ifw_wl src
+2        0     0 DROP       all  --  any    any     anywhere             anywhere             match-set ifw_bl src
+3        0     0 IFWLOG     all  --  any    any     anywhere             anywhere             ctstate INVALID,NEWpsd weight-threshold: 10 delay-threshold: 10000 lo-ports-weight: 2 hi-ports-weight: 1 IFWLOG prefix 'SCAN' 
+
+Chain dynamic (4 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain eno1_fwd (1 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+1        0     0 sfilter    all  --  any    eno1    anywhere             anywhere            [goto] 
+2        0     0 dynamic    all  --  any    any     anywhere             anywhere             ctstate INVALID,NEW,UNTRACKED
+3        0     0 tcpflags   tcp  --  any    any     anywhere             anywhere            
+4        0     0 net_frwd   all  --  any    any     anywhere             anywhere            
+
+Chain eno1_in (1 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+1        0     0 dynamic    all  --  any    any     anywhere             anywhere             ctstate INVALID,NEW,UNTRACKED
+2        0     0 tcpflags   tcp  --  any    any     anywhere             anywhere            
+3        0     0 net-fw     all  --  any    any     anywhere             anywhere            
+
+Chain eno1_out (1 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+1        0     0 fw-net     all  --  any    any     anywhere             anywhere            
+
+Chain fw-net (2 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+1    13341 1630K ACCEPT     all  --  any    any     anywhere             anywhere             ctstate RELATED,ESTABLISHED
+2     1288 85489 ACCEPT     all  --  any    any     anywhere             anywhere            
+
+Chain logdrop (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+1        0     0 DROP       all  --  any    any     anywhere             anywhere            
+
+Chain logflags (7 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+1        0     0 LOG        all  --  any    any     anywhere             anywhere             limit: up to 1/sec burst 10 mode srcip LOG level info ip-options prefix "logflags DROP "
+2        0     0 DROP       all  --  any    any     anywhere             anywhere            
+
+Chain logreject (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+1        0     0 reject     all  --  any    any     anywhere             anywhere            
+
+Chain net-fw (2 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+1    15327   11M ACCEPT     all  --  any    any     anywhere             anywhere             ctstate RELATED,ESTABLISHED
+2       39  4670 DROP       all  --  any    any     anywhere             anywhere             ADDRTYPE match dst-type BROADCAST
+3        0     0 DROP       all  --  any    any     anywhere             anywhere             ADDRTYPE match dst-type ANYCAST
+4        0     0 DROP       all  --  any    any     anywhere             anywhere             ADDRTYPE match dst-type MULTICAST
+5        2    80 LOG        all  --  any    any     anywhere             anywhere             limit: up to 1/sec burst 10 mode srcip LOG level info prefix "net-fw DROP "
+6        2    80 DROP       all  --  any    any     anywhere             anywhere            
+
+Chain net_frwd (2 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+1        0     0 ACCEPT     all  --  any    eno1    anywhere             anywhere            
+2        0     0 ACCEPT     all  --  any    wlo1    anywhere             anywhere            
+
+Chain reject (4 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+1        0     0 DROP       all  --  any    any     anywhere             anywhere             ADDRTYPE match src-type BROADCAST
+2        0     0 DROP       all  --  any    any     base-address.mcast.net/4  anywhere            
+3        0     0 DROP       igmp --  any    any     anywhere             anywhere            
+4        0     0 REJECT     tcp  --  any    any     anywhere             anywhere             reject-with tcp-reset
+5        0     0 REJECT     udp  --  any    any     anywhere             anywhere             reject-with icmp-port-unreachable
+6        0     0 REJECT     icmp --  any    any     anywhere             anywhere             reject-with icmp-host-unreachable
+7        0     0 REJECT     all  --  any    any     anywhere             anywhere             reject-with icmp-host-prohibited
+
+Chain sfilter (2 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+1        0     0 LOG        all  --  any    any     anywhere             anywhere             limit: up to 1/sec burst 10 mode srcip LOG level info prefix "sfilter DROP "
+2        0     0 DROP       all  --  any    any     anywhere             anywhere            
+
+Chain sha-lh-d9388ea02fbbe5d5ad92 (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain sha-rh-d324d3a746bcb06f4146 (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain shorewall (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+1        0     0            all  --  any    any     anywhere             anywhere             recent: SET name: %CURRENTTIME side: source mask: 255.255.255.255
+
+Chain tcpflags (4 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+1        0     0 logflags   tcp  --  any    any     anywhere             anywhere            [goto]  tcp flags:FIN,SYN,RST,PSH,ACK,URG/FIN,PSH,URG
+2        0     0 logflags   tcp  --  any    any     anywhere             anywhere            [goto]  tcp flags:FIN,SYN,RST,PSH,ACK,URG/NONE
+3        0     0 logflags   tcp  --  any    any     anywhere             anywhere            [goto]  tcp flags:SYN,RST/SYN,RST
+4        0     0 logflags   tcp  --  any    any     anywhere             anywhere            [goto]  tcp flags:FIN,RST/FIN,RST
+5        0     0 logflags   tcp  --  any    any     anywhere             anywhere            [goto]  tcp flags:FIN,SYN/FIN,SYN
+6        0     0 logflags   tcp  --  any    any     anywhere             anywhere            [goto]  tcp flags:FIN,PSH,ACK/FIN,PSH
+7        0     0 logflags   tcp  --  any    any     anywhere             anywhere            [goto]  tcp spt:0 flags:FIN,SYN,RST,ACK/SYN
+
+Chain wlo1_fwd (1 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+1        0     0 sfilter    all  --  any    wlo1    anywhere             anywhere            [goto] 
+2        0     0 dynamic    all  --  any    any     anywhere             anywhere             ctstate INVALID,NEW,UNTRACKED
+3        0     0 tcpflags   tcp  --  any    any     anywhere             anywhere            
+4        0     0 net_frwd   all  --  any    any     anywhere             anywhere            
+
+Chain wlo1_in (1 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+1       41  4750 dynamic    all  --  any    any     anywhere             anywhere             ctstate INVALID,NEW,UNTRACKED
+2    14386   11M tcpflags   tcp  --  any    any     anywhere             anywhere            
+3    15368   11M net-fw     all  --  any    any     anywhere             anywhere            
+
+Chain wlo1_out (1 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+1    14629 1716K fw-net     all  --  any    any     anywhere             anywhere            

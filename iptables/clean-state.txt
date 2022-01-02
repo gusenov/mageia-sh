@@ -1,0 +1,68 @@
+Chain INPUT (policy DROP 9 packets, 756 bytes)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain FORWARD (policy DROP 0 packets, 0 bytes)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain OUTPUT (policy DROP 66 packets, 9094 bytes)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain Ifw (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain dynamic (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain eno1_fwd (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain eno1_in (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain eno1_out (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain fw-net (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain logdrop (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain logflags (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain logreject (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain net-fw (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain net_frwd (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain reject (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain sfilter (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain sha-lh-d9388ea02fbbe5d5ad92 (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain sha-rh-d324d3a746bcb06f4146 (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain shorewall (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain tcpflags (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain wlo1_fwd (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain wlo1_in (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         
+
+Chain wlo1_out (0 references)
+num   pkts bytes target     prot opt in     out     source               destination         

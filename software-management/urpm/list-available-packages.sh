@@ -1,0 +1,1 @@
+urpmq --list -g
